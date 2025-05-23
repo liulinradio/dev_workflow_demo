@@ -1,0 +1,14 @@
+name: Block Non-Develop Merges to Master
+on:
+  pull_request:
+    branches: [master]
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Block if not from develop
+      run: |
+        if [[ "${{ github.head_ref }}" != "develop" ]]; then
+          echo "Only 'develop' branch can merge into 'master'"
+          exit 1
+        fi
