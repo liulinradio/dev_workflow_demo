@@ -10,7 +10,7 @@ on:
       state:
         description: 'PR state: open, closed, or all'
         required: true
-        default: 'open'
+        default: 'all'
 
 jobs:
   find-prs-and-files:
