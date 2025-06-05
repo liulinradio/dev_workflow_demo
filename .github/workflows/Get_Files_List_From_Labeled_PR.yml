@@ -1,0 +1,75 @@
+name: Build Release Folder with Manifest List
+
+on:
+  workflow_dispatch:
+    inputs:
+      label_name:
+        description: 'Label to search for (e.g., include in release)'
+        required: true
+        default: 'include in the release'
+      state:
+        description: 'PR state: open, closed, or all'
+        required: true
+        default: 'all'
+
+jobs:
+  build-flat-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up tools
+        run: sudo apt-get install -y jq
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create  release folder and manifest
+        run: |
+          label="${{ github.event.inputs.label_name }}"
+          state="${{ github.event.inputs.state }}"
+          repo="${{ github.repository }}"
+          token="${{ secrets.GITHUB_TOKEN }}"
+          date=$(date -u +"%Y-%m-%d")
+          release_dir="release-${date}"
+
+          mkdir -p "$release_dir"
+          mkdir -p "$release_dir/files"
+          > file_set.txt
+
+          manifest="$release_dir/manifest.yaml"
+          echo "manifest_version: 1.0" > "$manifest"
+          echo "label: \"$label\"" >> "$manifest"
+          echo "generated_at: \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"" >> "$manifest"
+          echo "files:" >> "$manifest"
+
+          prs=$(curl -s -H "Authorization: Bearer $token" \
+            "https://api.github.com/repos/$repo/pulls?state=$state&per_page=100" \
+            | jq -r --arg label "$label" '.[] | select(.labels[].name == $label) | .number')
+
+          if [ -z "$prs" ]; then
+            echo "No PRs found with label '$label'"
+            exit 0
+          fi
+
+          for pr in $prs; do
+            files=$(curl -s -H "Authorization: Bearer $token" \
+              "https://api.github.com/repos/$repo/pulls/$pr/files" \
+              | jq -r '.[].filename')
+
+            for file in $files; do
+              if ! grep -Fxq "$file" file_set.txt; then
+                echo "$file" >> file_set.txt
+                echo "  - \"$file\"" >> "$manifest"
+
+                # Copy file into flat release directory
+                filename=$(basename "$file")
+                cp -r "$file" "$release_dir/files/$filename" 2>/dev/null || echo "Warning: $file not found in current checkout"
+              fi
+            done
+          done
+
+      - name: Upload release folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-folder
+          path: release-*/
