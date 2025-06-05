@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       label_name:
-        description: 'Label to search for (e.g., include in the release)'
+        description: 'Label to search for (e.g., include-in-release)'
         required: true
         default: 'include in the release'
       state:
@@ -18,29 +18,8 @@ jobs:
 
     steps:
       - name: Set up jq and curl
-        run: sudo apt-get install jq
+        run: sudo apt-get install -y jq
 
-      - name: Find PRs by label
-        id: list_prs
+      - name: Find PRs by label and list unique files
         run: |
-          echo "Searching PRs with label '${{ github.event.inputs.label_name }}'..."
-          
-          prs=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls?state=${{ github.event.inputs.state }}&per_page=100" \
-            | jq -r '.[] | select(.labels[].name == "${{ github.event.inputs.label_name }}") | .number')
-
-          if [ -z "$prs" ]; then
-            echo "No PRs found with label '${{ github.event.inputs.label_name }}'"
-            exit 0
-          fi
-
-          echo "Found PRs: $prs"
-          echo "$prs" > pr_list.txt
-
-          > all_modified_files.txt
-          > file_set.txt
-
-          for pr in $prs; do
-            echo "Processing PR #$pr..."
-            files=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/$pr/files" \
+          echo "Searching PRs with label '${{ github.event.inp
