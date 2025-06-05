@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       label_name:
-        description: 'Label to search for (e.g., include-in-release)'
+        description: 'Label to search for (e.g., include in the release)'
         required: true
-        default: 'include-in-release'
+        default: 'include in the release'
       state:
         description: 'PR state: open, closed, or all'
         required: true
-        default: 'all'
+        default: 'open'
 
 jobs:
   find-prs-and-files:
@@ -38,16 +38,9 @@ jobs:
           echo "$prs" > pr_list.txt
 
           > all_modified_files.txt
-          for pr in $prs; do
-            echo "PR #$pr" >> all_modified_files.txt
-            curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/$pr/files" \
-              | jq -r '.[].filename' >> all_modified_files.txt
-            echo "---" >> all_modified_files.txt
-          done
+          > file_set.txt
 
-      - name: Upload result
-        uses: actions/upload-artifact@v4
-        with:
-          name: modified-files-by-label
-          path: all_modified_files.txt
+          for pr in $prs; do
+            echo "Processing PR #$pr..."
+            files=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$pr/files" \
