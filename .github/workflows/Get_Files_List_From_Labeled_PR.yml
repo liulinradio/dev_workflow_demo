@@ -22,4 +22,43 @@ jobs:
 
       - name: Find PRs by label and list unique files
         run: |
-          echo "Searching PRs with label '${{ github.event.inp
+          echo "Searching PRs with label '${{ github.event.inputs.label_name }}' and state '${{ github.event.inputs.state }}'..."
+
+          label="${{ github.event.inputs.label_name }}"
+          state="${{ github.event.inputs.state }}"
+          repo="${{ github.repository }}"
+          token="${{ secrets.GITHUB_TOKEN }}"
+
+          # Fetch PRs and filter by label
+          prs=$(curl -s -H "Authorization: Bearer $token" \
+            "https://api.github.com/repos/$repo/pulls?state=$state&per_page=100" \
+            | jq -r --arg label "$label" '.[] | select(.labels[].name == $label) | .number')
+
+          if [ -z "$prs" ]; then
+            echo "No PRs found with label '$label'"
+            exit 0
+          fi
+
+          echo "Found PRs: $prs"
+          > all_modified_files.txt
+          > file_set.txt
+
+          for pr in $prs; do
+            echo "Processing PR #$pr..."
+            files=$(curl -s -H "Authorization: Bearer $token" \
+              "https://api.github.com/repos/$repo/pulls/$pr/files" \
+              | jq -r '.[].filename')
+
+            for file in $files; do
+              if ! grep -Fxq "$file" file_set.txt; then
+                echo "$file" >> file_set.txt
+                echo "$file (from PR #$pr)" >> all_modified_files.txt
+              fi
+            done
+          done
+
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: modified-files-by-label
+          path: all_modified_files.txt
