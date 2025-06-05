@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE template SYSTEM "..\template.dtd">
+<template>
+    <section name="">
+        <tab name="">
+            <row>
+                <block>
+                    <line>
+                        <cell shaded="true" cell-span="1" line-span="1">
+                            <text class="bw-title">Lexia - Student Access</text>
+                        </cell>
+                    </line>
+                </block>
+            </row>
+            <row>
+                <block>
+                    <line>
+                        <text><![CDATA[ 
+                            <div>
+                                <div><a href="https://aspenreports.bwdsb.on.ca/reports/report/Aspen%20Reports/School/LexiaStudent-Access" target="_blank" style=" color: rgb(55, 125, 255); text-decoration: none; transition: color 0.2s ease 0s, text-decoration 0.2s ease 0s">Click here</a>&nbsp;to view a summary of all students who currently have Lexia access in your school.</div>
+                                <ul>
+                                    <li>At any time you can change a students Lexia access by submitting this form again with their name(s) selected.</li>
+                                    <li>Lexia access will be granted/removed the next business day after this form has been submitted.</li>
+                                </ul>
+                            </div>
+                            ]]></text>
+                    </line>
+                    <line border="top"><spacer height="5" /></line>
+                    <line>
+                        <cell vertical-align="top">
+                            <text bold="true"> Manage Lexia access:</text>
+                            <radio alias="lsa-option" value="lsa-option-1">Grant access for selected student(s) until the end of the current school year (includes summer)</radio>
+                            <radio alias="lsa-option" value="lsa-option-2">Grant access for selected student(s) until specified date (up to 12 months)</radio>
+                            <radio alias="lsa-option" value="lsa-option-3">Remove access for selected student(s)</radio>
+                            <property hidden-id="lsa-date" alias="lsa-date" label-display="hide" />
+                            <property alias="lsa-submitted" display="false" default-value-source="default" default-value="today" />
+                            <text><![CDATA[ <div id="lsa-date-validation"/>]]></text>
+                        </cell>
+                    </line>
+                    <line>
+                        <text><![CDATA[ 
+                                <div>Once you have specified your date select <b>Next</b> and then <b>Finish</b>.</div>
+                            ]]></text>
+                    </line>
+                </block>
+            </row>
+            <row>
+                <block>
+                    <line>
+                        <text><![CDATA[
+                            <div id="jsAliasToElementHideMe"></div>
+                            <script language="JavaScript">
+                                /* Add CSS Styling */
+                                let styles = `
+                                /* Styling for disclaimer at the bottom of each page */
+                                .bw-disclaimer {
+                                    font-size:12px;
+                                    font-style:italic;
+                                    padding-left:5px;
+                                    padding-right:5px;
+                                    padding-top:3px;
+                                    padding-bottom:3px;
+                                    display: block;
+                                }
+                                
+                                /* Styling for top title bar of form */
+                                .bw-title {
+                                    padding-left:10px;
+                                    padding-top:5px;
+                                    padding-bottom:5px;
+                                    color:white;
+                                    background-color:#117ABB;
+                                    width:100%;
+                                    font-size:16px;
+                                    font-weight:bold;
+                                }
+                                
+                                /* Styling for top title bar of a heading */
+                                .bw-heading {
+                                    padding-left:10px;
+                                    padding-top:5px;
+                                    padding-bottom:5px;
+                                    color:white;
+                                    background-color:#117ABB;
+                                    width:100%;
+                                    font-size:16px;
+                                    font-weight:bold;
+                                }
+                                
+                                /* Adding additional padding to default form boxes */
+                                #mainTable {
+                                    padding-left:5px;
+                                    padding-right:5px;
+                                    padding-top:2px;
+                                    padding-bottom:2px;
+                                }
+                                
+                                /* Removes form highlighting when read only */
+                                select[readonly], input[readonly], textarea[readonly="readonly"], textarea[readonly] {
+                                    background-color: #E9ECEF;
+                                    outline:none;
+                                }
+                                
+                                td:has(input[type="checkbox"]) {
+                                    vertical-align: top;
+                                }
+                                
+                                /* Custom Button Styling to make the Aspen buttons for visually appealing */
+                                .button {
+                                    appearance: none;
+                                    background-color: #FAFBFC;
+                                    border: 1px solid rgba(27, 31, 35, 0.15);
+                                    border-radius: 6px;
+                                    box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+                                    box-sizing: border-box;
+                                    color: #24292E;
+                                    cursor: pointer;
+                                    display: inline-block;
+                                    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                    line-height: 20px;
+                                    list-style: none;
+                                    padding: 6px 16px;
+                                    position: relative;
+                                    transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+                                    user-select: none;
+                                    -webkit-user-select: none;
+                                    touch-action: manipulation;
+                                    vertical-align: middle;
+                                    white-space: nowrap;
+                                    word-wrap: break-word;
+                                }
+                                
+                                .button:hover {
+                                    background-color: #F3F4F6;
+                                    text-decoration: none;
+                                    transition-duration: 0.1s;
+                                }
+                                
+                                .button:disabled {
+                                    background-color: #FAFBFC;
+                                    border-color: rgba(27, 31, 35, 0.15);
+                                    color: #959DA5;
+                                    cursor: default;
+                                }
+                                
+                                .button:active {
+                                    background-color: #EDEFF2;
+                                    box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
+                                    transition: none 0s;
+                                }
+                                
+                                .button:focus {
+                                    outline: 1px transparent;
+                                }
+                                
+                                .button:before {
+                                    display: none;
+                                }
+                                
+                                .button:-webkit-details-marker {
+                                    display: none;
+                                }
+                                
+                                .error {
+                                    outline:solid 1px #BB0728;
+                                }
+                                
+                                `
+                                
+                                var styleSheet = document.createElement("style")
+                                styleSheet.innerText = styles
+                                document.head.appendChild(styleSheet)
+                                
+                                /*
+                                Skip Options
+                                <span id="skipsaveverify"/> - Removes the save & verify button
+                                <span id="onlysaveverify"/> - Removes save button
+                                <span id="allowfinishbutton"/> - Allows the form to be ran outside of a workflow/task screen/ or the first step in a workflow
+                                <span id="skipdisclaimer"/> - Skips the disclaimer for collecting personal information
+                                <span id="skipsaveverifyprompt"/> - Skips the Are you sure? prompt when using the save & verify button
+                                */
+                                
+                                $(document).ready(function () {
+                                    let currentDate = new Date();
+                                    let dateValue = document.getElementById('lsa-date').parentElement.querySelector('table').querySelector('input').value;
+                                
+                                    window.resizeTo(700, 530);
+                                
+                                    $("#jsAliasToElementHideMe").closest('table').closest('div').hide(); // Hide blank script box at bottom of page
+                                    $('#lsa-date-validation').parent().html('<div id="lsa-date-validation"></div>'); // Remove Aspen added data to field - Causing white space
+                                
+                                    formLoadFormatting();
+                                
+                                    if($('input[type="radio"]:checked').val() == 'lsa-option-2')
+                                    {
+                                        document.getElementById('lsa-date').parentElement.querySelector('table').style.display = '';
+                                
+                                        // Disable next button if selected date is invalid on form load
+                                        if(!(dateValue && Date.parse(dateValue) >= currentDate && Date.parse(dateValue) <= currentDate.addDays(366)))
+                                        {
+                                            $('button[name="wizNextButton"]').attr('disabled', true);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $('button[name="wizNextButton"]').attr('disabled', false);
+                                        document.getElementById('lsa-date').parentElement.querySelector('table').style.display = 'none';
+                                    }
+                                });
+                                
+                                // Event Handler
+                                    // Validation on radio button
+                                    $('input[type="radio"]').on('click change', function(e) {
+                                        if($(this).val() == 'lsa-option-2')
+                                        {
+                                            let currentDate = new Date();
+                                            let dateValue = document.getElementById('lsa-date').parentElement.querySelector('table').querySelector('input').value;
+                                            document.getElementById('lsa-date').parentElement.querySelector('table').style.display = '';
+                                            
+                                            if(dateValue && Date.parse(dateValue) >= currentDate && Date.parse(dateValue) <= currentDate.addDays(366))
+                                            {
+                                                $('button[name="wizNextButton"]').attr('disabled', false);
+                                            }
+                                            else
+                                            {
+                                                $('button[name="wizNextButton"]').attr('disabled', true);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            document.getElementById('lsa-date').parentElement.querySelector('table').querySelector('input').value = '';
+                                            $('button[name="wizNextButton"]').attr('disabled', false);
+                                            document.getElementById('lsa-date').parentElement.querySelector('table').style.display = 'none';
+                                            document.getElementById('lsa-date').parentElement.querySelector('table').querySelector('input').classList.remove('error');
+                                            $('#lsa-date-validation').parent().html('<div id="lsa-date-validation"></div>');
+                                        }
+                                    });
+                                
+                                    // Validation on date picker for Option 2
+                                    $('input[type="text"]').on('change.datecheck', function(e) {
+                                        let currentDate = new Date();
+                                        let selectedDate = Date.parse($(this).val());
+                                        if($(this).val() && selectedDate >= currentDate && selectedDate <= currentDate.addDays(366))
+                                        {
+                                            $('button[name="wizNextButton"]').attr('disabled', false);
+                                            document.getElementById('lsa-date').parentElement.querySelector('table').querySelector('input').classList.remove('error');
+                                            $('#lsa-date-validation').parent().html('<div id="lsa-date-validation"></div>');
+                                        }
+                                        else
+                                        {
+                                            $('button[name="wizNextButton"]').attr('disabled', true);
+                                            document.getElementById('lsa-date').parentElement.querySelector('table').querySelector('input').classList.add('error');
+                                            $('#lsa-date-validation').parent().html('<div id="lsa-date-validation"><span style="color:#BB0728;">Please select a date that is greater than today and less than 12 months in the future.</span></div>');
+                                        }
+                                    });
+                                
+                                /**
+                                * Applies formatting specific to Case Management on Form Load
+                                */
+                                function formLoadFormatting()
+                                {
+                                    let imgElements = document.getElementsByTagName("img");
+                                
+                                
+                                    // Remove the maximize button textarea boxes
+                                    for (let i = 0; i < imgElements.length; i++) {
+                                        if(imgElements[i].src.split("/").pop() == 'maximize.gif')
+                                        {
+                                            imgElements[i].style.display = "none";
+                                        }
+                                    }
+                                
+                                    // Remove the maximize button textarea boxes
+                                    for (let i = 0; i < imgElements.length; i++) {
+                                        if(imgElements[i].src.split("/").pop() == 'upload-icon.gif' && imgElements[i].style.display != "none")
+                                        {
+                                            imgElements[i].outerHTML += "<span style='font-size:14px;padding-left:5px;'>Upload</span>";
+                                        }
+                                        else if(imgElements[i].src.split("/").pop() == 'download-icon.gif' && imgElements[i].style.display != "none")
+                                        {
+                                            imgElements[i].outerHTML += "<span style='font-size:14px;padding-left:5px;'>Download</span>";
+                                        }
+                                        else if(imgElements[i].src.split("/").pop() == 'closeMicro.png' && imgElements[i].style.display != "none")
+                                        {
+                                            imgElements[i].outerHTML += "<span style='font-size:14px;padding-left:5px;'>Remove</span>";
+                                        }
+                                    }
+                                
+                                
+                                    // Add title styling with the board logo
+                                    document.getElementsByClassName("bw-title")[0].parentElement.classList.add("bw-title");
+                                    document.getElementsByClassName("bw-title")[0].insertAdjacentHTML("beforebegin", '<img width="40" height="44" style="margin-left:5px;margin-right:10px;margin-top:1px;margin-bottom:1px;" src="https://www.bwdsb.on.ca/UserFiles/Servers/Server_8166100/Media/logo.png" />');
+                                
+                                    $('.bw-heading').parent().addClass("bw-heading");
+                                
+                                }
+                                //# sourceURL=BWDSB_functions.js
+                            </script>      
+                        ]]></text>
+                    </line>
+                </block>
+            </row>
+        </tab>
+    </section>
+</template>
