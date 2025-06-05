@@ -1,0 +1,53 @@
+name: List Files by PR Label
+
+on:
+  workflow_dispatch:
+    inputs:
+      label_name:
+        description: 'Label to search for (e.g., include-in-release)'
+        required: true
+        default: 'include-in-release'
+      state:
+        description: 'PR state: open, closed, or all'
+        required: true
+        default: 'open'
+
+jobs:
+  find-prs-and-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up jq and curl
+        run: sudo apt-get install jq
+
+      - name: Find PRs by label
+        id: list_prs
+        run: |
+          echo "Searching PRs with label '${{ github.event.inputs.label_name }}'..."
+          
+          prs=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?state=${{ github.event.inputs.state }}&per_page=100" \
+            | jq -r '.[] | select(.labels[].name == "${{ github.event.inputs.label_name }}") | .number')
+
+          if [ -z "$prs" ]; then
+            echo "No PRs found with label '${{ github.event.inputs.label_name }}'"
+            exit 0
+          fi
+
+          echo "Found PRs: $prs"
+          echo "$prs" > pr_list.txt
+
+          > all_modified_files.txt
+          for pr in $prs; do
+            echo "PR #$pr" >> all_modified_files.txt
+            curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$pr/files" \
+              | jq -r '.[].filename' >> all_modified_files.txt
+            echo "---" >> all_modified_files.txt
+          done
+
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: modified-files-by-label
+          path: all_modified_files.txt
