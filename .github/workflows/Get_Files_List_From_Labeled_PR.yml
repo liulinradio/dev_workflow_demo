@@ -33,6 +33,7 @@ jobs:
           release_dir="release-${date}"
 
           mkdir -p "$release_dir"
+          mkdir -p "$release_dir/files"
           > file_set.txt
 
           manifest="$release_dir/manifest.yaml"
