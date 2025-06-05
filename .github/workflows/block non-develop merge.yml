@@ -1,7 +1,6 @@
 name: Block Non-Develop Merges to Master
 on:
-  pull_request:
-    branches: [master]
+  workflow_dispatch:
 jobs:
   check-branch:
     runs-on: ubuntu-latest
