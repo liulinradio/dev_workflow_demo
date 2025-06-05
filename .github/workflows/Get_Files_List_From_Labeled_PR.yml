@@ -1,16 +1,16 @@
-name: Build Flat Release Folder with Manifest
+name: Build Release Folder with Manifest List
 
 on:
   workflow_dispatch:
     inputs:
       label_name:
-        description: 'Label to search for (e.g., include-in-release)'
+        description: 'Label to search for (e.g., include in release)'
         required: true
         default: 'include in the release'
       state:
         description: 'PR state: open, closed, or all'
         required: true
-        default: 'open'
+        default: 'all'
 
 jobs:
   build-flat-release:
@@ -23,7 +23,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create flat release folder and manifest
+      - name: Create  release folder and manifest
         run: |
           label="${{ github.event.inputs.label_name }}"
           state="${{ github.event.inputs.state }}"
@@ -62,7 +62,7 @@ jobs:
 
                 # Copy file into flat release directory
                 filename=$(basename "$file")
-                cp -r "$file" "$release_dir/$filename" 2>/dev/null || echo "Warning: $file not found in current checkout"
+                cp -r "$file" "$release_dir/files/$filename" 2>/dev/null || echo "Warning: $file not found in current checkout"
               fi
             done
           done
@@ -70,5 +70,5 @@ jobs:
       - name: Upload release folder
         uses: actions/upload-artifact@v4
         with:
-          name: flat-release-folder
+          name: release-folder
           path: release-*/
